@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_app/HomePage.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:contacts_service/contacts_service.dart';
-
-// import 'package:flutter_sms/flutter_sms.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'contactsListProvider.dart';
 
 class CreateGroup extends StatefulWidget {
   @override
@@ -12,22 +9,16 @@ class CreateGroup extends StatefulWidget {
 }
 
 class _CreateGroupState extends State<CreateGroup> {
-  List<Contact> _contacts;
-  //TODO:Replace 500 with _contats.length
-  List<bool> _checked = new List<bool>.filled(600, false, growable: true);
+  bool isLoadingContacts = true;
   @override
-  void initState() {
-    super.initState();
-    setContactsAndCheckedList();
-  }
-
-  void setContactsAndCheckedList() async {
-    _contacts = (await ContactsService.getContacts()).toList();
-
-    setState(() {
-      _contacts;
-      _checked;
-    });
+  Future<void> didChangeDependencies() async {
+    if (isLoadingContacts) {
+      ContactList contactList = Provider.of<ContactList>(context);
+      contactList.updateContactListAndCheckedList(
+          (await ContactsService.getContacts()).toList());
+      isLoadingContacts = false;
+    }
+    super.didChangeDependencies();
   }
 
   Widget build(BuildContext context) {
@@ -35,41 +26,40 @@ class _CreateGroupState extends State<CreateGroup> {
       appBar: AppBar(
         title: Text("Create Group"),
       ),
-      body: _contacts != null
-          ? ListView.builder(
-              itemCount: _contacts?.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: CheckboxListTile(
-                    controlAffinity: ListTileControlAffinity.platform,
-                    title: Text(_contacts[index].displayName),
-                    value: _checked[index],
-                    onChanged: (value) {
-                      _checked[index] = value;
-                      refershCheckedList();
+      body: Consumer<ContactList>(
+        builder: (context, contactList, child) => Stack(
+          children: [
+            !contactList.isEmpty()
+                ? ListView.builder(
+                    itemCount: contactList.getContactsList?.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: CheckboxListTile(
+                          controlAffinity: ListTileControlAffinity.platform,
+                          title:
+                              Text(contactList.getContactsList[index].displayName),
+                          value: contactList.getChecked[index],
+                          onChanged: (value) {
+                            contactList.getChecked[index] = value;
+                            contactList.toggleCheckBox(index);
+                          },
+                        ),
+                      );
                     },
-                  ),
-                );
-              },
-            )
-          : Center(child: CircularProgressIndicator()),
+                  )
+                : Center(child: CircularProgressIndicator()),
+            child,
+            Text("Total contacts: ${contactList.getContactsList.length}"),
+          ],
+        ),
+        child: Container(),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePage(_contacts, _checked),
-            ),
-          );
+          Navigator.pop(context);
         },
         child: Icon(Icons.navigate_next),
       ),
     );
-  }
-
-  void refershCheckedList() {
-    setState(() {
-      _checked;
-    });
   }
 }

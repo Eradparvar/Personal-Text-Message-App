@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/CreateGroup.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'HomePage.dart';
+import 'package:provider/provider.dart';
+import 'createGroup.dart';
+import 'homePage.dart';
+import 'contactsListProvider.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(App());
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: HomePage(),
-      // home: MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Personal Text Message App',
+      home: MyHomePage(),
     );
   }
+}
 
-  Future<void> _askPermissions() async {
-    openAppSettings();
-    // await ContactsService.getContacts();
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<ContactList>(
+      create: (context) => ContactList(),
+      child: MaterialApp(home: HomePage(), routes: {
+        'homepage_screen': (context) => HomePage(),
+        'createGroup_screen': (context) => CreateGroup()
+      }),
+    );
   }
 }

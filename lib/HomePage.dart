@@ -1,37 +1,14 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:contacts_service/contacts_service.dart';
-import 'package:flutter_app/CreateGroup.dart';
-import 'package:flutter_app/PreviewPage.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'createGroup.dart';
 
 class HomePage extends StatefulWidget {
-  List<Contact> contacts;
-  List<bool> checked;
-  HomePage([List<Contact> this.contacts, List<bool> this.checked]);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  // List<bool> _checked;
-  // List<Contact> _contacts;
   final myController = TextEditingController();
-
-  @override
-  void setState(fn) {
-    // TODO: implement setState
-    super.setState(fn);
-    widget.contacts;
-    widget.checked;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    myController.addListener(_printLatestValue);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,37 +16,15 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Home"),
       ),
-      body:
-          // ListView.builder(itemCount: 3, itemBuilder: (context, index) {})
-          ListView(
+      body: ListView(
         children: [
           buildCard("Create Group", Icons.group_add),
-          buildCard("Modify Group", Icons.settings),
-          buildCard("Select Group", Icons.person_add),
-          widget.contacts != null
-              ? Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.select_all),
-                        title: Center(child: Text("Values Selected Great")),
-                      )
-                    ],
-                  ),
-                )
-              : Container(
-                  child: Text("Nope"),
-                ),
           buildNameButtonBar(),
           TextField(
-            onChanged: (value) {
-              _printLatestValue();
-            },
             controller: myController,
             keyboardType: TextInputType.multiline,
-            minLines: 3, //Normal textInputField will be displayed
-            maxLines: 5, // when user presses enter it will adapt to it
+            minLines: 3,
+            maxLines: 5,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Message',
@@ -79,17 +34,6 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-  }
-
-  // void _insertName() {
-  //   _myController.text = "hello";
-  //   print(${_myController.text});
-  // }
-  void _printLatestValue() {
-    // print("Second text field");
-    // print(" Old value: ${myController.text}");
-    // myController.text = myController.text + " ----- Hello ----";
-    // print(" New value: ${myController.text}");
   }
 
   ButtonBar buildNameButtonBar() {
@@ -114,8 +58,8 @@ class _HomePageState extends State<HomePage> {
     var newText = myController.text + inputText;
     myController.value = myController.value.copyWith(
         text: newText,
-        selection: TextSelection(
-            baseOffset: newText.length, extentOffset: newText.length),
+        selection:
+            TextSelection(baseOffset: newText.length, extentOffset: newText.length),
         composing: TextRange.empty);
   }
 
@@ -127,9 +71,7 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(8.0),
           child: OutlineButton(
             onPressed: () {
-              // openAppSettings();
-              // You can request multiple permissions at once.
-              request();
+              reqestPermissions();
             },
             child: Text("openAppSettings/Send"),
           ),
@@ -143,8 +85,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PreviewPage(
-                      widget.contacts, widget.checked, myController),
+                  builder: (context) => PreviewPage(myController),
                 ),
               );
             },
@@ -155,7 +96,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  request() async {
+  reqestPermissions() async {
     openAppSettings();
     Map<Permission, PermissionStatus> statuses = await [
       Permission.contacts,
@@ -180,6 +121,7 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: Icon(icon),
               title: Center(child: Text(tile)),
+              trailing: Icon(Icons.check),
             )
           ],
         ),
