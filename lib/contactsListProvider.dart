@@ -21,7 +21,7 @@ class ContactList extends ChangeNotifier {
   }
 
   void toggleCheckBox(int index) {
-    _checked[index] = _checked[index];
+    _checked[index] = !_checked[index];
 
     notifyListeners();
   }
