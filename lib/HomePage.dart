@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'createGroup.dart';
 
+class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -55,11 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   void inputPlaceHolder(String inputText) {
     var newText = myController.text + inputText;
-    myController.value = myController.value.copyWith(
-        text: newText,
-        selection:
-            TextSelection(baseOffset: newText.length, extentOffset: newText.length),
-        composing: TextRange.empty);
+    myController.value = myController.value.copyWith(text: newText, selection: TextSelection(baseOffset: newText.length, extentOffset: newText.length), composing: TextRange.empty);
   }
 
   Row buildBottomRow() {
@@ -111,8 +108,7 @@ class _HomePageState extends State<HomePage> {
     return Card(
       child: InkWell(
         onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CreateGroup()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateGroup()));
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
