@@ -3,6 +3,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'createGroup.dart';
 
 class HomePage extends StatefulWidget {
+class HomePage extends StatefulWidge {
   @override
   _HomePageState createState() => _HomePageState();
 }
